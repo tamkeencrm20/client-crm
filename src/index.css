@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 font-sans text-slate-900 antialiased;
+    /* Respect the iOS safe area on phones. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Arabic numerals read better than Eastern ones inside a data table. */
+  [lang='ar'] {
+    font-feature-settings: 'lnum';
+  }
+
+  ::selection {
+    @apply bg-brand-600/15;
+  }
+
+  /* A focus ring that is visible on both light cards and the brand header. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-card;
+  }
+
+  .input-base {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900
+           transition placeholder:text-slate-400
+           focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20
+           disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500;
+  }
+
+  .label-base {
+    @apply mb-1.5 block text-sm font-semibold text-slate-700;
+  }
+
+  /* Scrollbars inside panels, so long lists do not look like dead ends. */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300;
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Recharts renders LTR internally; keep its tooltips readable in RTL. */
+.recharts-tooltip-wrapper {
+  direction: ltr;
+  outline: none;
+}
