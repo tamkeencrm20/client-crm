@@ -11,6 +11,16 @@ import axios from 'axios';
 
 const STORAGE_KEY = 'tamkeen.auth';
 
+/**
+ * The API origin, with any trailing slash removed.
+ *
+ * A deploy dashboard will happily accept "https://api.example.com/" and the
+ * naive concatenation then produces "https://api.example.com//api/auth/login",
+ * whose double slash some proxies pass through as a different path. Normalise
+ * once here so the value is forgiving of how it was typed.
+ */
+export const API_ORIGIN = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
 export function readAuth() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? null;
@@ -25,7 +35,7 @@ export function writeAuth(auth) {
 }
 
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_URL || '') + '/api',
+  baseURL: API_ORIGIN + '/api',
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -51,7 +61,7 @@ async function refreshAccessToken() {
   if (!auth?.refreshToken) throw new Error('No refresh token');
 
   const { data } = await axios.post(
-    (import.meta.env.VITE_API_URL || '') + '/api/auth/refresh',
+    API_ORIGIN + '/api/auth/refresh',
     { refreshToken: auth.refreshToken },
     { headers: { 'Content-Type': 'application/json' } },
   );

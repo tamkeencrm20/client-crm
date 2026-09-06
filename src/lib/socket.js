@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client';
+import { API_ORIGIN } from './api.js';
 
 /**
  * One shared socket for the session. Reconnects on its own; the caller only
@@ -15,7 +16,7 @@ export function connectSocket(token) {
     return socket;
   }
 
-  socket = io(import.meta.env.VITE_API_URL || undefined, {
+  socket = io(API_ORIGIN || undefined, {
     auth: { token },
     path: '/socket.io',
     transports: ['websocket', 'polling'],
