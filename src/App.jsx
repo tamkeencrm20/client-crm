@@ -14,10 +14,18 @@ import Branches from './pages/Branches.jsx';
 import Courses from './pages/Courses.jsx';
 import Notifications from './pages/Notifications.jsx';
 import Settings from './pages/Settings.jsx';
+import Platforms from './pages/Platforms.jsx';
 import NotFound from './pages/NotFound.jsx';
 
-/** Gate a subtree behind sign-in and, optionally, a minimum role. */
-function Protected({ minRole, children }) {
+/**
+ * Gate a subtree behind sign-in and, optionally, a role test.
+ *
+ * `minRole` is a rank floor; `roles` is an exact list. The platforms page needs
+ * the exact form because a team leader outranks a media buyer but is refused by
+ * the API there — a rank floor would render the page and then 403 on every
+ * request inside it.
+ */
+function Protected({ minRole, roles, children }) {
   const { user, booting } = useAuth();
 
   if (booting) {
@@ -30,6 +38,7 @@ function Protected({ minRole, children }) {
 
   if (!user) return <Navigate to="/login" replace />;
   if (minRole && ROLE_RANK[user.role] < ROLE_RANK[minRole]) return <Navigate to="/" replace />;
+  if (roles && !roles.includes(user.role)) return <Navigate to="/" replace />;
 
   return children;
 }
@@ -52,6 +61,14 @@ export default function App() {
         <Route path="queue" element={<MyQueue />} />
         <Route path="leads" element={<Leads />} />
         <Route path="leads/:id" element={<LeadDetail />} />
+        <Route
+          path="platforms"
+          element={
+            <Protected roles={['media_buyer', 'admin']}>
+              <Platforms />
+            </Protected>
+          }
+        />
         <Route
           path="team"
           element={

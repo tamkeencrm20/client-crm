@@ -32,9 +32,9 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useBranches } from '../hooks/useReferenceData.js';
 import { useLiveUpdates } from '../hooks/useLiveUpdates.js';
-import { isAdmin, isLeader, PIPELINE_ORDER, STATUS_STYLES, CHART_COLORS } from '../lib/constants.js';
+import { isAdmin, seesBranch, PIPELINE_ORDER, PLATFORM_STYLES, STATUS_STYLES, CHART_COLORS } from '../lib/constants.js';
 import { bilingual, formatMinutes, formatMoney, formatNumber, formatDate } from '../lib/format.js';
-import { Avatar, Card, CardHeader, EmptyState, LoadingBlock, Select, cx } from '../components/ui/index.jsx';
+import { Avatar, Badge, Card, CardHeader, EmptyState, LoadingBlock, Select, cx } from '../components/ui/index.jsx';
 
 const RANGES = [
   { value: 7, key: 'range7' },
@@ -53,7 +53,8 @@ export default function Dashboard() {
 
   const { data: branches } = useBranches();
   const admin = isAdmin(user);
-  const leader = isLeader(user);
+  // Reporting panels follow branch visibility, which includes the media buyer.
+  const leader = seesBranch(user);
 
   const params = {
     from: dayjs().subtract(days - 1, 'day').startOf('day').toISOString(),
@@ -324,6 +325,34 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Which ad network is actually converting, not just delivering volume. */}
+      {leader && (sources.data?.byPlatform?.length ?? 0) > 0 && (
+        <Card>
+          <CardHeader title={t('platform.performance')} />
+          <div className="grid gap-3 p-4 sm:grid-cols-3">
+            {sources.data.byPlatform.map((p) => (
+              <div key={p._id} className="rounded-2xl border border-slate-200 p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <Badge className={PLATFORM_STYLES[p._id]?.chip} dot={PLATFORM_STYLES[p._id]?.dot}>
+                    {t(`platform.${p._id}`, p._id)}
+                  </Badge>
+                  <span className="text-sm font-bold tabular-nums text-slate-900">{p.conversionRate}%</span>
+                </div>
+                <p className="mt-3 text-2xl font-black tabular-nums text-slate-900">{formatNumber(p.leads, locale)}</p>
+                <p className="text-xs font-semibold text-slate-500">{t('platform.totalLeads')}</p>
+                <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+                  <span className="text-slate-500">
+                    {t('dashboard.enrolled')}{' '}
+                    <b className="tabular-nums text-emerald-600">{formatNumber(p.enrolled, locale)}</b>
+                  </span>
+                  <span className="font-semibold tabular-nums text-slate-700">{formatMoney(p.revenue, locale)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* Courses, campaigns, team */}
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {leader && (
@@ -356,8 +385,15 @@ export default function Dashboard() {
                 <EmptyState title={t('dashboard.noDataYet')} className="py-10" />
               ) : (
                 sources.data.byCampaign.map((c) => (
-                  <div key={c._id} className="flex items-center justify-between gap-3 px-5 py-3">
-                    <span className="truncate text-sm font-semibold text-slate-700">{c._id}</span>
+                  <div key={`${c.network ?? 'none'}-${c._id}`} className="flex items-center justify-between gap-3 px-5 py-3">
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="truncate text-sm font-semibold text-slate-700">{c._id}</span>
+                      {c.network && (
+                        <Badge className={cx('shrink-0', PLATFORM_STYLES[c.network]?.chip)}>
+                          {t(`platform.${c.network}`, c.network)}
+                        </Badge>
+                      )}
+                    </span>
                     <span className="shrink-0 text-sm tabular-nums text-slate-500">
                       {formatNumber(c.leads, locale)}
                       <span className="mx-1 text-slate-300">·</span>

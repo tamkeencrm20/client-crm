@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Phone, MessageCircle, Mail, Clock, AlertTriangle, CalendarClock } from 'lucide-react';
-import { STATUS_STYLES } from '../../lib/constants.js';
+import { PLATFORM_STYLES, STATUS_STYLES } from '../../lib/constants.js';
 import { useLocale } from '../../context/LocaleContext.jsx';
 import { bilingual, formatPhone, phoneDigits, fromNow, followUpState, formatDate } from '../../lib/format.js';
 import { Avatar, Badge, cx } from '../ui/index.jsx';
@@ -13,6 +13,26 @@ export function StatusBadge({ status, className }) {
   return (
     <Badge className={cx(style.chip, className)} dot={style.dot}>
       {t(`status.${status}`)}
+    </Badge>
+  );
+}
+
+/**
+ * Which ad network delivered this lead.
+ *
+ * Suppressed when the source chip beside it already says the same thing: a
+ * TikTok lead has source "tiktok", so two identical pills add nothing. Meta is
+ * the case that earns the badge, because its source reads "Facebook" or
+ * "Instagram" and the network above them is still worth naming.
+ */
+export function PlatformBadge({ network, source, className }) {
+  const { t } = useTranslation();
+  if (!network || network === source) return null;
+
+  const style = PLATFORM_STYLES[network];
+  return (
+    <Badge className={cx(style?.chip, className)} dot={style?.dot}>
+      {t(`platform.${network}`, network)}
     </Badge>
   );
 }
@@ -120,6 +140,7 @@ export function LeadRow({ lead, showAssignee = true }) {
           <StatusBadge status={lead.status} />
           {lead.nextFollowUpAt && <FollowUpTag date={lead.nextFollowUpAt} />}
           <Badge className="bg-slate-100 text-slate-600 ring-slate-200">{t(`source.${lead.source}`)}</Badge>
+          <PlatformBadge network={lead.meta?.network} source={lead.source} />
         </div>
 
         {/* Owner + time */}

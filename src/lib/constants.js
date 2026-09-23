@@ -6,13 +6,26 @@
 export const ROLES = {
   ADMIN: 'admin',
   TEAM_LEADER: 'team_leader',
+  MEDIA_BUYER: 'media_buyer',
   AGENT: 'agent',
 };
 
-export const ROLE_RANK = { agent: 1, team_leader: 2, admin: 3 };
+export const ROLE_RANK = { agent: 1, media_buyer: 2, team_leader: 3, admin: 4 };
 
-export const isLeader = (user) => ROLE_RANK[user?.role] >= 2;
 export const isAdmin = (user) => user?.role === ROLES.ADMIN;
+export const isMediaBuyer = (user) => user?.role === ROLES.MEDIA_BUYER;
+
+/** Team leaders and admins: the roles that own the sales team and the pipeline. */
+export const isLeader = (user) => ROLE_RANK[user?.role] >= ROLE_RANK.team_leader;
+
+/** Everyone who reads a whole branch rather than a personal list. */
+export const seesBranch = (user) => ROLE_RANK[user?.role] >= ROLE_RANK.media_buyer;
+
+/** Who may configure the ad platforms. */
+export const managesPlatforms = (user) => isMediaBuyer(user) || isAdmin(user);
+
+/** A media buyer reads the pipeline but never writes to it. */
+export const canEditLeads = (user) => !isMediaBuyer(user);
 
 export const LEAD_STATUS = {
   NEW: 'new',
@@ -66,6 +79,8 @@ export const STATUS_STYLES = {
 export const LEAD_SOURCES = [
   'meta_facebook',
   'meta_instagram',
+  'tiktok',
+  'snapchat',
   'website',
   'walk_in',
   'phone',
@@ -79,6 +94,33 @@ export const ACTIVITY_TYPES = ['call', 'whatsapp', 'email', 'meeting', 'note'];
 export const CALL_OUTCOMES = ['answered', 'no_answer', 'busy', 'wrong_number', 'switched_off'];
 
 export const DISTRIBUTION_STRATEGIES = ['round_robin', 'least_loaded', 'manual'];
+
+/** The ad networks the CRM ingests from, with the colour each one is known by. */
+export const AD_PLATFORMS = ['meta', 'tiktok', 'snapchat'];
+
+export const PLATFORM_STYLES = {
+  meta: { chip: 'bg-[#0866FF]/10 text-[#0b5ed7] ring-[#0866FF]/25', bar: '#0866FF', dot: 'bg-[#0866FF]' },
+  tiktok: { chip: 'bg-slate-900/8 text-slate-800 ring-slate-900/20', bar: '#111827', dot: 'bg-slate-900' },
+  snapchat: { chip: 'bg-[#FFFC00]/25 text-[#8a7a00] ring-[#d6c800]/40', bar: '#E4C700', dot: 'bg-[#E4C700]' },
+};
+
+/** Outcome of a single row in a spreadsheet import. */
+export const IMPORT_ROW_STATUS = { CREATED: 'created', DUPLICATE: 'duplicate', INVALID: 'invalid' };
+
+export const IMPORT_MAX_ROWS = 5000;
+
+/**
+ * Column headings the server recognises, shown in the import dialog so people
+ * can name their columns correctly before uploading rather than after a
+ * failed run. Mirrors IMPORT_ALIASES in server/src/services/import.service.js.
+ */
+export const IMPORT_COLUMNS = [
+  { key: 'fullName', required: true, aliases: ['الاسم', 'اسم', 'full name', 'name'] },
+  { key: 'phone', required: true, aliases: ['رقم الهاتف', 'هاتف', 'جوال', 'phone', 'mobile'] },
+  { key: 'email', required: false, aliases: ['البريد الإلكتروني', 'ايميل', 'email'] },
+  { key: 'course', required: false, aliases: ['الدورة', 'برنامج', 'course', 'program'] },
+  { key: 'note', required: false, aliases: ['ملاحظات', 'ملاحظة', 'note', 'notes'] },
+];
 
 /** Brand palette, for charts that cannot read Tailwind classes. */
 export const CHART_COLORS = ['#006473', '#f76a0c', '#36748b', '#997d40', '#4499ad', '#fd7f3a', '#71bac9'];

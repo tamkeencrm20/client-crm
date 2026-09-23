@@ -28,6 +28,7 @@ import { useAssignableAgents } from '../hooks/useReferenceData.js';
 import {
   ACTIVITY_TYPES,
   CALL_OUTCOMES,
+  canEditLeads,
   isLeader,
   STATUS_STYLES,
   STATUS_TRANSITIONS,
@@ -56,7 +57,7 @@ import {
   Textarea,
   cx,
 } from '../components/ui/index.jsx';
-import { ContactActions, FollowUpTag, StatusBadge } from '../components/leads/LeadBits.jsx';
+import { ContactActions, FollowUpTag, PlatformBadge, StatusBadge } from '../components/leads/LeadBits.jsx';
 
 export default function LeadDetail() {
   const { id } = useParams();
@@ -72,6 +73,7 @@ export default function LeadDetail() {
   const [assignOpen, setAssignOpen] = useState(false);
 
   const leader = isLeader(user);
+  const canEdit = canEditLeads(user);
   const Back = isRtl ? ArrowRight : ArrowLeft;
 
   const { data, isLoading, isError, error, refetch } = useQuery({
@@ -145,6 +147,7 @@ export default function LeadDetail() {
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <StatusBadge status={lead.status} />
                   <Badge className="bg-slate-100 text-slate-600 ring-slate-200">{t(`source.${lead.source}`)}</Badge>
+                  <PlatformBadge network={lead.meta?.network} source={lead.source} />
                   {lead.nextFollowUpAt && <FollowUpTag date={lead.nextFollowUpAt} />}
                   {(lead.tags ?? []).map((tag) => (
                     <Badge key={tag} className="bg-brand-50 text-brand-700 ring-brand-200">
@@ -164,14 +167,18 @@ export default function LeadDetail() {
 
         {/* Primary actions */}
         <div className="flex flex-wrap gap-2 bg-slate-50/60 px-5 py-3 sm:px-6">
-          <Button onClick={() => setStatusOpen(true)} disabled={allowedNext.length === 0}>
-            <RefreshCw className="h-4 w-4" />
-            {t('leads.changeStatus')}
-          </Button>
-          <Button variant="secondary" onClick={() => setActivityOpen(true)}>
-            <MessageSquarePlus className="h-4 w-4" />
-            {t('leads.logActivity')}
-          </Button>
+          {canEdit && (
+            <>
+              <Button onClick={() => setStatusOpen(true)} disabled={allowedNext.length === 0}>
+                <RefreshCw className="h-4 w-4" />
+                {t('leads.changeStatus')}
+              </Button>
+              <Button variant="secondary" onClick={() => setActivityOpen(true)}>
+                <MessageSquarePlus className="h-4 w-4" />
+                {t('leads.logActivity')}
+              </Button>
+            </>
+          )}
           {leader && (
             <>
               <Button variant="secondary" onClick={() => setAssignOpen(true)}>
@@ -302,7 +309,10 @@ export default function LeadDetail() {
           {/* Meta campaign attribution */}
           {lead.meta?.leadgenId && (
             <Card>
-              <CardHeader title={t('leads.metaDetails')} />
+              <CardHeader
+                title={t('leads.metaDetails')}
+                action={<PlatformBadge network={lead.meta?.network} />}
+              />
               <dl className="divide-y divide-slate-50">
                 {lead.meta.campaignName && (
                   <Row Icon={Megaphone} label={t('leads.campaignName')}>
@@ -358,8 +368,12 @@ export default function LeadDetail() {
         </div>
       </div>
 
-      <StatusModal open={statusOpen} onClose={() => setStatusOpen(false)} lead={lead} allowed={allowedNext} onDone={invalidate} />
-      <ActivityModal open={activityOpen} onClose={() => setActivityOpen(false)} leadId={id} onDone={invalidate} />
+      {canEdit && (
+        <>
+          <StatusModal open={statusOpen} onClose={() => setStatusOpen(false)} lead={lead} allowed={allowedNext} onDone={invalidate} />
+          <ActivityModal open={activityOpen} onClose={() => setActivityOpen(false)} leadId={id} onDone={invalidate} />
+        </>
+      )}
       {leader && (
         <AssignModal
           open={assignOpen}

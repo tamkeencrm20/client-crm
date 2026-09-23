@@ -76,6 +76,7 @@ export default function Team() {
   const roleTabs = [
     { value: '', label: t('common.all') },
     { value: ROLES.AGENT, label: t('roles.agent') },
+    { value: ROLES.MEDIA_BUYER, label: t('roles.media_buyer') },
     { value: ROLES.TEAM_LEADER, label: t('roles.team_leader') },
     ...(admin ? [{ value: ROLES.ADMIN, label: t('roles.admin') }] : []),
   ];
@@ -332,6 +333,7 @@ function UserFormModal({ open, target, onClose }) {
         <Field label={t('team.role')}>
           <Select value={form.role} onChange={(e) => set('role', e.target.value)} disabled={!admin}>
             <option value={ROLES.AGENT}>{t('roles.agent')}</option>
+            {admin && <option value={ROLES.MEDIA_BUYER}>{t('roles.media_buyer')}</option>}
             {admin && <option value={ROLES.TEAM_LEADER}>{t('roles.team_leader')}</option>}
             {admin && <option value={ROLES.ADMIN}>{t('roles.admin')}</option>}
           </Select>

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, SlidersHorizontal, Shuffle, X, Users2 } from 'lucide-react';
+import { Plus, Search, SlidersHorizontal, Shuffle, Upload, X, Users2 } from 'lucide-react';
 import api, { errorMessage } from '../lib/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { useBranches, useCourses } from '../hooks/useReferenceData.js';
 import { useLiveUpdates } from '../hooks/useLiveUpdates.js';
-import { isAdmin, isLeader, LEAD_SOURCES, PIPELINE_ORDER, ROLES } from '../lib/constants.js';
+import { canEditLeads, isAdmin, isLeader, LEAD_SOURCES, PIPELINE_ORDER, ROLES } from '../lib/constants.js';
 import { bilingual } from '../lib/format.js';
 import {
   Button,
@@ -25,6 +25,7 @@ import {
 } from '../components/ui/index.jsx';
 import { LeadRow } from '../components/leads/LeadBits.jsx';
 import LeadFormModal from '../components/leads/LeadFormModal.jsx';
+import ImportModal from '../components/leads/ImportModal.jsx';
 
 const EMPTY_FILTERS = {
   status: '',
@@ -49,9 +50,11 @@ export default function Leads() {
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const admin = isAdmin(user);
   const leader = isLeader(user);
+  const canEdit = canEditLeads(user);
 
   useLiveUpdates(['leads']);
 
@@ -126,10 +129,18 @@ export default function Leads() {
               <span className="hidden sm:inline">{t('leads.distributeQueue')}</span>
             </Button>
           )}
-          <Button onClick={() => setCreateOpen(true)}>
-            <Plus className="h-4 w-4" />
-            {t('leads.newLead')}
-          </Button>
+          {canEdit && (
+            <Button variant="secondary" onClick={() => setImportOpen(true)}>
+              <Upload className="h-4 w-4" />
+              <span className="hidden sm:inline">{t('import.button')}</span>
+            </Button>
+          )}
+          {canEdit && (
+            <Button onClick={() => setCreateOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('leads.newLead')}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -256,7 +267,7 @@ export default function Leads() {
             title={debounced || activeFilterCount ? t('common.noResults') : t('leads.empty')}
             hint={debounced || activeFilterCount ? t('common.noResultsHint') : t('leads.emptyHint')}
             action={
-              !debounced && !activeFilterCount ? (
+              !debounced && !activeFilterCount && canEdit ? (
                 <Button onClick={() => setCreateOpen(true)}>
                   <Plus className="h-4 w-4" />
                   {t('leads.addLead')}
@@ -280,6 +291,7 @@ export default function Leads() {
       </Card>
 
       <LeadFormModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
   );
 }
