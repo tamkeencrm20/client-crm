@@ -438,5 +438,33 @@
     "reasonMissingPhone": "رقم الهاتف مفقود أو غير مقروء",
     "reasonRepeatedInFile": "مكرر داخل نفس الملف",
     "reasonAlreadyExists": "مسجّل مسبقاً في النظام"
+  },
+  "export": {
+    "button": "تصدير Excel",
+    "exporting": "جارٍ التصدير…",
+    "done": "تم تصدير {{count}} عميل",
+    "empty": "لا توجد بيانات للتصدير",
+    "truncated": "تم تصدير أول {{count}} صف فقط — ضيّق التصفية للحصول على الباقي",
+    "failed": "تعذّر التصدير",
+    "columns": {
+      "fullName": "الاسم الكامل",
+      "phone": "رقم الهاتف",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "source": "المصدر",
+      "network": "المنصة",
+      "campaign": "الحملة",
+      "course": "الدورة",
+      "branch": "الفرع",
+      "assignedTo": "الموظف المسؤول",
+      "contactAttempts": "محاولات التواصل",
+      "createdAt": "تاريخ الإنشاء",
+      "firstContactedAt": "أول تواصل",
+      "nextFollowUpAt": "المتابعة القادمة",
+      "enrolledAt": "تاريخ التسجيل",
+      "dealValue": "قيمة الصفقة",
+      "lostReason": "سبب الإغلاق",
+      "tags": "الوسوم"
+    }
   }
 }

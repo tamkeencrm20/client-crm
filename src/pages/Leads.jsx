@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, SlidersHorizontal, Shuffle, Upload, X, Users2 } from 'lucide-react';
+import { Download, Plus, Search, SlidersHorizontal, Shuffle, Upload, X, Users2 } from 'lucide-react';
 import api, { errorMessage } from '../lib/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
@@ -10,6 +10,7 @@ import { useBranches, useCourses } from '../hooks/useReferenceData.js';
 import { useLiveUpdates } from '../hooks/useLiveUpdates.js';
 import { canEditLeads, isAdmin, isLeader, LEAD_SOURCES, PIPELINE_ORDER, ROLES } from '../lib/constants.js';
 import { bilingual } from '../lib/format.js';
+import { downloadLeadsWorkbook } from '../lib/exportSheet.js';
 import {
   Button,
   Card,
@@ -51,6 +52,7 @@ export default function Leads() {
   const [showFilters, setShowFilters] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const admin = isAdmin(user);
   const leader = isLeader(user);
@@ -93,6 +95,38 @@ export default function Leads() {
     queryFn: async () => (await api.get('/leads/stats/pipeline')).data.data,
   });
 
+  /**
+   * Export what is on screen. The same query params the list is using go to the
+   * server, so the file matches the filters rather than dumping everything.
+   */
+  const runExport = async () => {
+    setExporting(true);
+    try {
+      const { page: _page, limit: _limit, ...exportParams } = params;
+      const { data } = await api.get('/leads/export', { params: exportParams });
+
+      if (data.data.total === 0) {
+        toast.error(t('export.empty'));
+        return;
+      }
+
+      const count = downloadLeadsWorkbook({
+        rows: data.data.rows,
+        columns: data.data.columns,
+        heading: (key) => t(`export.columns.${key}`, key),
+        translate: (group, value) => t(`${group}.${value}`, value),
+        locale,
+      });
+
+      toast.success(t('export.done', { count }));
+      if (data.data.truncated) toast.error(t('export.truncated', { count }));
+    } catch (err) {
+      toast.error(errorMessage(err, t('export.failed')));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const distribute = useMutation({
     mutationFn: () => api.post('/leads/distribute/unassigned'),
     onSuccess: ({ data }) => {
@@ -129,6 +163,10 @@ export default function Leads() {
               <span className="hidden sm:inline">{t('leads.distributeQueue')}</span>
             </Button>
           )}
+          <Button variant="secondary" onClick={runExport} loading={exporting}>
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">{t('export.button')}</span>
+          </Button>
           {canEdit && (
             <Button variant="secondary" onClick={() => setImportOpen(true)}>
               <Upload className="h-4 w-4" />

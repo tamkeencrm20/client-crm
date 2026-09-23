@@ -73,12 +73,18 @@ export default function Team() {
     onError: (err) => toast.error(errorMessage(err)),
   });
 
+  // Media buyers report to the administration, not to a branch's team leader,
+  // so a leader gets neither the tab nor the rows behind it.
   const roleTabs = [
     { value: '', label: t('common.all') },
     { value: ROLES.AGENT, label: t('roles.agent') },
-    { value: ROLES.MEDIA_BUYER, label: t('roles.media_buyer') },
     { value: ROLES.TEAM_LEADER, label: t('roles.team_leader') },
-    ...(admin ? [{ value: ROLES.ADMIN, label: t('roles.admin') }] : []),
+    ...(admin
+      ? [
+          { value: ROLES.MEDIA_BUYER, label: t('roles.media_buyer') },
+          { value: ROLES.ADMIN, label: t('roles.admin') },
+        ]
+      : []),
   ];
 
   return (

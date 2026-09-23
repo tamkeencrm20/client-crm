@@ -89,14 +89,16 @@ function SidebarContent({ items }) {
 
   return (
     <>
-      <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-lg font-black text-white">
-          ت
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-black text-slate-900">{t('app.name')}</p>
-          <p className="truncate text-xs text-slate-500">{t('app.fullName')}</p>
-        </div>
+      <div className="border-b border-slate-100 px-5 py-5">
+        {/* The lockup already carries the centre's name in both languages, so
+            it stands alone rather than being captioned twice over. */}
+        <img
+          src="/logo-compact.png"
+          alt={t('app.fullName')}
+          width={240}
+          height={124}
+          className="h-auto w-full max-w-[9.5rem]"
+        />
       </div>
 
       <nav className="scroll-thin flex-1 space-y-1 overflow-y-auto p-3">

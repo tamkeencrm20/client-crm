@@ -438,5 +438,33 @@
     "reasonMissingPhone": "Missing or unreadable phone number",
     "reasonRepeatedInFile": "Repeated earlier in this same file",
     "reasonAlreadyExists": "Already in the CRM"
+  },
+  "export": {
+    "button": "Export to Excel",
+    "exporting": "Exporting…",
+    "done": "Exported {{count}} leads",
+    "empty": "Nothing to export",
+    "truncated": "Only the first {{count}} rows were exported — narrow the filters for the rest",
+    "failed": "Export failed",
+    "columns": {
+      "fullName": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "status": "Status",
+      "source": "Source",
+      "network": "Platform",
+      "campaign": "Campaign",
+      "course": "Course",
+      "branch": "Branch",
+      "assignedTo": "Assigned to",
+      "contactAttempts": "Contact attempts",
+      "createdAt": "Created",
+      "firstContactedAt": "First contact",
+      "nextFollowUpAt": "Next follow-up",
+      "enrolledAt": "Enrolled on",
+      "dealValue": "Deal value",
+      "lostReason": "Reason",
+      "tags": "Tags"
+    }
   }
 }

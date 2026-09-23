@@ -47,15 +47,18 @@ export default function Login() {
           aria-hidden
         />
         <div className="relative z-10 mx-auto w-full max-w-md">
-          <div className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl font-black text-brand-600">
-              ت
-            </span>
-            <div>
-              <p className="text-lg font-black leading-tight">{t('app.fullName')}</p>
-              <p className="text-sm text-white/70">{t('app.tagline')}</p>
-            </div>
+          {/* The wordmark is black on transparent, so it sits on a white card
+              rather than directly on the brand teal, where it would disappear. */}
+          <div className="inline-flex rounded-2xl bg-white px-5 py-4 shadow-lg">
+            <img
+              src="/logo.png"
+              alt={t('app.fullName')}
+              width={720}
+              height={371}
+              className="h-auto w-44 sm:w-52"
+            />
           </div>
+          <p className="mt-4 text-sm text-white/70">{t('app.tagline')}</p>
 
           <h1 className="mt-8 text-2xl font-black leading-snug sm:text-3xl lg:mt-12 lg:text-4xl">
             {t('app.name')}
