@@ -55,9 +55,31 @@ export function formatMinutes(minutes, t) {
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
+/**
+ * Words that are a job title rather than part of someone's name. Accounts are
+ * often stored as "Team Leader إسلام" so the role reads in places with no room
+ * for a badge; without this the avatar would show "Tإ" instead of the initial
+ * of the actual person.
+ */
+const NAME_TITLES = new Set([
+  'mr', 'mrs', 'ms', 'miss', 'dr', 'eng',
+  'team', 'leader', 'media', 'buyer', 'sales', 'agent', 'admin',
+  'أ', 'م', 'د', 'مهندس', 'مدير', 'قائد', 'فريق', 'موظف', 'مبيعات',
+]);
+
 /** Two-letter monogram for the avatar circle. */
 export function initials(name = '') {
-  const parts = String(name).trim().split(/\s+/).slice(0, 2);
+  const words = String(name)
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.replace(/[.,]/g, ''))
+    .filter(Boolean);
+
+  // Drop leading titles, but never everything — a name that is only a title
+  // still needs something to show.
+  const personal = words.filter((w) => !NAME_TITLES.has(w.toLowerCase()));
+  const parts = (personal.length > 0 ? personal : words).slice(0, 2);
+
   return parts.map((p) => p[0]?.toUpperCase() ?? '').join('') || '?';
 }
 
