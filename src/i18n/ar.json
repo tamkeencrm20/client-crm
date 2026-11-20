@@ -401,7 +401,8 @@
     "retryDone": "تم استرجاع {{recovered}} من {{total}}",
     "leadsMissingPhone": "{{count}} عميل وصل بلا رقم هاتف، في قائمة غير الموزَّعين بانتظار المراجعة.",
     "pageRouting": "الصفحات والفروع",
-    "noBranch": "بلا فرع"
+    "noBranch": "بلا فرع",
+    "noPagesMapped": "لا توجد صفحة مرتبطة بفرع. أضف META_PAGE_BRANCHES في إعدادات الخادم وأعد تشغيله، وإلا وصل كل عميل بلا فرع."
   },
   "import": {
     "title": "استيراد عملاء من ملف",

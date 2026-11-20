@@ -401,7 +401,8 @@
     "retryDone": "Recovered {{recovered}} of {{total}}",
     "leadsMissingPhone": "{{count}} lead(s) arrived with no phone number and are waiting in the unassigned queue.",
     "pageRouting": "Pages and branches",
-    "noBranch": "No branch"
+    "noBranch": "No branch",
+    "noPagesMapped": "No page is mapped to a branch. Set META_PAGE_BRANCHES in the server settings and restart, or every lead arrives with no branch."
   },
   "import": {
     "title": "Import leads from a file",

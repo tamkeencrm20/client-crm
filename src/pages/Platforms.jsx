@@ -243,8 +243,15 @@ function PlatformPanel({ platform, status }) {
         </div>
       </Field>
 
-      {status.pages?.length > 0 && (
+      {/*
+        Rendered even when empty. Hiding it was indistinguishable from a
+        server that had not been redeployed, and that ambiguity cost a round
+        of guessing; an empty state that names the missing setting answers
+        the question on the screen itself.
+      */}
+      {platform === 'meta' && (
         <Field label={t('platform.pageRouting')}>
+          {status.pages?.length > 0 ? (
           <div className="overflow-hidden rounded-lg ring-1 ring-slate-200">
             {status.pages.map((page) => (
               <div
@@ -263,6 +270,11 @@ function PlatformPanel({ platform, status }) {
               </div>
             ))}
           </div>
+          ) : (
+            <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">
+              {t('platform.noPagesMapped')}
+            </p>
+          )}
         </Field>
       )}
 
