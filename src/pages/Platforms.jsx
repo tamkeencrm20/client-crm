@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Check, Copy, Link2, Radio, Send, X } from 'lucide-react';
+import { AlertTriangle, Check, Copy, Link2, Radio, Send, X } from 'lucide-react';
 import api, { errorMessage } from '../lib/api.js';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
@@ -221,6 +221,8 @@ function PlatformPanel({ platform, status }) {
         </Badge>
       </div>
 
+      <IntakeAlerts platform={platform} status={status} />
+
       <div className="grid gap-2 sm:grid-cols-3">
         <Flag ok={status.appSecretConfigured} label={t('platform.appSecret')} />
         <Flag ok={status.verifyTokenConfigured} label={t('platform.verifyToken')} />
@@ -244,6 +246,67 @@ function PlatformPanel({ platform, status }) {
 
       <SyncLead platform={platform} />
       <SimulateLead platform={platform} />
+    </div>
+  );
+}
+
+/**
+ * What arrived but never became a lead.
+ *
+ * Every green tick above can be green while no lead has been stored for days:
+ * the keys are configured, the webhook answers, and the fetch behind it fails
+ * because the token expired. That failure is invisible from everywhere else in
+ * the system, so it is reported here, where the person who can fix it looks.
+ */
+function IntakeAlerts({ platform, status }) {
+  const { t } = useTranslation();
+  const { locale } = useLocale();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const retry = useMutation({
+    mutationFn: async () => (await api.post(`/${platform}/events/retry-failed`)).data.data,
+    onSuccess: (data) => {
+      toast.success(t('platform.retryDone', { recovered: data.recovered, total: data.total }));
+      queryClient.invalidateQueries({ queryKey: ['platform', platform, 'status'] });
+    },
+    onError: (err) => toast.error(errorMessage(err)),
+  });
+
+  const { tokenExpired, tokenError, failedEvents = 0, leadsMissingPhone = 0 } = status;
+  if (!tokenExpired && failedEvents === 0 && leadsMissingPhone === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      {tokenExpired && (
+        <div className="flex items-start gap-2 rounded-lg bg-rose-50 p-3 text-sm text-rose-900 ring-1 ring-rose-200">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+          <div className="min-w-0">
+            <p className="font-semibold">{t('platform.tokenExpired')}</p>
+            <p className="mt-0.5 text-rose-800">{t('platform.tokenExpiredHelp')}</p>
+            {tokenError?.at && (
+              <p className="mt-1 text-xs text-rose-700">
+                {t('platform.lastFailureAt', { at: formatDateTime(tokenError.at, locale) })}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {failedEvents > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          <span>{t('platform.failedEvents', { count: failedEvents })}</span>
+          <Button size="sm" variant="secondary" onClick={() => retry.mutate()} disabled={retry.isPending}>
+            {retry.isPending ? t('common.loading') : t('platform.retryFailed')}
+          </Button>
+        </div>
+      )}
+
+      {leadsMissingPhone > 0 && (
+        <div className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          {t('platform.leadsMissingPhone', { count: leadsMissingPhone })}
+        </div>
+      )}
     </div>
   );
 }

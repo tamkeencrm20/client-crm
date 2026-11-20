@@ -392,7 +392,14 @@
     "performance": "Platform performance",
     "conversionRate": "Conversion rate",
     "noneConnected": "No platform connected yet",
-    "noneConnectedHint": "Add the platform keys to the server environment variables and restart"
+    "noneConnectedHint": "Add the platform keys to the server environment variables and restart",
+    "tokenExpired": "The access token has expired — no leads are arriving",
+    "tokenExpiredHelp": "The integration looks connected, but fetching the lead details fails. Generate a fresh permanent page token, update it in the server settings, then press Retry to recover what was missed.",
+    "lastFailureAt": "Last failed attempt: {{at}}",
+    "failedEvents": "{{count}} lead(s) arrived but were not stored yet. Their details are kept and can be recovered.",
+    "retryFailed": "Retry failed",
+    "retryDone": "Recovered {{recovered}} of {{total}}",
+    "leadsMissingPhone": "{{count}} lead(s) arrived with no phone number and are waiting in the unassigned queue."
   },
   "import": {
     "title": "Import leads from a file",
