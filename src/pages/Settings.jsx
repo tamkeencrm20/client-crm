@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Check, Copy, Languages, Link2, Lock, Plug, Send, X } from 'lucide-react';
-import api, { errorMessage } from '../lib/api.js';
+import api, { API_ORIGIN, errorMessage } from '../lib/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
@@ -136,7 +136,10 @@ function MetaCard() {
   });
 
   const connected = data?.appSecretConfigured && data?.verifyTokenConfigured && data?.pageAccessTokenConfigured;
-  const webhookUrl = data ? `${window.location.origin}${data.webhookPath}` : '';
+  // The same correction as on the platforms screen: the webhook lives on the
+  // API, and building it from this page's own origin named the web app, which
+  // answers every path with index.html and so looks healthy while being wrong.
+  const webhookUrl = data ? `${API_ORIGIN || window.location.origin}${data.webhookPath}` : '';
 
   const copy = async () => {
     try {
