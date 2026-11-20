@@ -399,7 +399,9 @@
     "failedEvents": "{{count}} lead(s) arrived but were not stored yet. Their details are kept and can be recovered.",
     "retryFailed": "Retry failed",
     "retryDone": "Recovered {{recovered}} of {{total}}",
-    "leadsMissingPhone": "{{count}} lead(s) arrived with no phone number and are waiting in the unassigned queue."
+    "leadsMissingPhone": "{{count}} lead(s) arrived with no phone number and are waiting in the unassigned queue.",
+    "pageRouting": "Pages and branches",
+    "noBranch": "No branch"
   },
   "import": {
     "title": "Import leads from a file",

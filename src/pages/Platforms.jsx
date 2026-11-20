@@ -4,7 +4,7 @@ import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/rea
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { AlertTriangle, Check, Copy, Link2, Radio, Send, X } from 'lucide-react';
-import api, { errorMessage } from '../lib/api.js';
+import api, { API_ORIGIN, errorMessage } from '../lib/api.js';
 import { useLocale } from '../context/LocaleContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { AD_PLATFORMS, PLATFORM_STYLES } from '../lib/constants.js';
@@ -195,7 +195,12 @@ function PlatformPanel({ platform, status }) {
   // Meta reports its token under a different name than the other two.
   const tokenConfigured = status.accessTokenConfigured ?? status.pageAccessTokenConfigured;
   const connected = status.appSecretConfigured && status.verifyTokenConfigured && tokenConfigured;
-  const webhookUrl = `${window.location.origin}${status.webhookPath}`;
+  // The webhook belongs to the API, not to this site. Building it from
+  // window.location produced a link to the web app itself, which Vercel
+  // answers with index.html for every path — so the URL shown here looked
+  // right, returned 200 to anything, and would have had Meta posting leads
+  // into an HTML page. API_ORIGIN is where the server actually is.
+  const webhookUrl = `${API_ORIGIN || window.location.origin}${status.webhookPath}`;
 
   const copy = async () => {
     try {
@@ -237,6 +242,29 @@ function PlatformPanel({ platform, status }) {
           </Button>
         </div>
       </Field>
+
+      {status.pages?.length > 0 && (
+        <Field label={t('platform.pageRouting')}>
+          <div className="overflow-hidden rounded-lg ring-1 ring-slate-200">
+            {status.pages.map((page) => (
+              <div
+                key={page.pageId}
+                className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-white px-3 py-2 text-sm last:border-b-0"
+              >
+                <span dir="ltr" className="font-mono text-xs text-slate-600">{page.pageId}</span>
+                <div className="flex items-center gap-2">
+                  {page.branchCode ? (
+                    <Badge className="bg-slate-100 text-slate-700 ring-slate-200">{page.branchCode}</Badge>
+                  ) : (
+                    <Badge className="bg-amber-100 text-amber-800 ring-amber-200">{t('platform.noBranch')}</Badge>
+                  )}
+                  <Flag ok={page.tokenConfigured} label={t('platform.accessToken')} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Field>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Metric label={t('platform.apiVersion')} value={status.apiVersion ?? status.graphVersion ?? '—'} />
