@@ -231,7 +231,10 @@
     "platform": "المنصة",
     "notContactedYet": "لم يتم التواصل بعد",
     "overdue": "متأخر",
-    "dueToday": "مستحق اليوم"
+    "dueToday": "مستحق اليوم",
+    "country": "الدولة",
+    "formAnswers": "إجابات النموذج",
+    "duplicateOwned": "هذا الرقم مسجّل مسبقاً — يتابعه {{name}}"
   },
   "queue": {
     "title": "مهامي اليوم",
@@ -447,7 +450,8 @@
     "reasonMissingName": "الاسم مفقود",
     "reasonMissingPhone": "رقم الهاتف مفقود أو غير مقروء",
     "reasonRepeatedInFile": "مكرر داخل نفس الملف",
-    "reasonAlreadyExists": "مسجّل مسبقاً في النظام"
+    "reasonAlreadyExists": "مسجّل مسبقاً في النظام",
+    "handledBy": "يتابعه {{name}}"
   },
   "export": {
     "button": "تصدير Excel",

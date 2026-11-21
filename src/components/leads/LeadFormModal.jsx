@@ -72,7 +72,10 @@ export default function LeadFormModal({ open, onClose, onCreated }) {
     onError: (err) => {
       const code = err?.response?.data?.error?.code;
       if (code === 'DUPLICATE_LEAD') {
-        setErrors({ phone: t('leads.duplicate') });
+        // Name the colleague who already has them. Without it the agent is
+        // told to stop but not who to ask, and calls the person anyway.
+        const owner = err?.response?.data?.error?.details?.assignedToName;
+        setErrors({ phone: owner ? t('leads.duplicateOwned', { name: owner }) : t('leads.duplicate') });
         return;
       }
       toast.error(errorMessage(err));

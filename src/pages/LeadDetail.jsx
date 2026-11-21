@@ -19,6 +19,7 @@ import {
   UserRound,
   Wallet,
   Megaphone,
+  Globe,
 } from 'lucide-react';
 import api, { errorMessage } from '../lib/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -278,6 +279,11 @@ export default function LeadDetail() {
               <Row Icon={GraduationCap} label={t('leads.course')}>
                 {courseLabel || '—'}
               </Row>
+              {lead.countryRaw && (
+                <Row Icon={Globe} label={t('leads.country')}>
+                  {lead.countryRaw}
+                </Row>
+              )}
               <Row Icon={Phone} label={t('leads.contactAttempts')}>
                 {lead.contactAttempts ?? 0}
               </Row>
@@ -305,6 +311,27 @@ export default function LeadDetail() {
               )}
             </dl>
           </Card>
+
+          {/*
+            Every answer exactly as it was submitted. The mapped fields above
+            cover the five the pipeline needs; a form also asks things no
+            column exists for — when to call, which country — and those were
+            being stored and never shown, so the agent phoned without the one
+            detail the person had taken the trouble to give.
+          */}
+          {lead.meta?.rawFields && Object.keys(lead.meta.rawFields).length > 0 && (
+            <Card>
+              <CardHeader title={t('leads.formAnswers')} />
+              <dl className="divide-y divide-slate-50">
+                {Object.entries(lead.meta.rawFields).map(([question, answer]) => (
+                  <div key={question} className="px-4 py-2.5">
+                    <dt className="text-xs text-slate-500">{question}</dt>
+                    <dd className="mt-0.5 text-sm font-medium text-slate-900">{answer || '—'}</dd>
+                  </div>
+                ))}
+              </dl>
+            </Card>
+          )}
 
           {/* Meta campaign attribution */}
           {lead.meta?.leadgenId && (

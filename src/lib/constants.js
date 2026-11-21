@@ -27,6 +27,19 @@ export const managesPlatforms = (user) => isMediaBuyer(user) || isAdmin(user);
 /** A media buyer reads the pipeline but never writes to it. */
 export const canEditLeads = (user) => !isMediaBuyer(user);
 
+/**
+ * Who may bring leads in from a spreadsheet.
+ *
+ * Wider than canEditLeads on purpose. A media buyer is kept out of the
+ * pipeline because the person who buys the traffic should not be the one
+ * grading it — but that argument is about judging an outcome, not about
+ * carrying a list in. Media buyers are usually the ones holding an export
+ * from a platform, and making them forward it to someone else to upload only
+ * delays the call. The server grants them their own branch and nothing wider,
+ * just as it pins an agent's upload to that agent's own book.
+ */
+export const canImportLeads = (user) => Boolean(user);
+
 export const LEAD_STATUS = {
   NEW: 'new',
   CONTACTED: 'contacted',

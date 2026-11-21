@@ -388,6 +388,9 @@ function ImportReport({ report }) {
                   <td className="px-3 py-2">
                     <span className={r.status === 'duplicate' ? 'text-amber-700' : 'text-rose-700'}>
                       {REASON_KEYS[r.reason] ? t(`import.${REASON_KEYS[r.reason]}`) : r.reason}
+                      {/* Who already has this person — the part that makes the
+                          row actionable rather than just a count. */}
+                      {r.assignedToName && ` — ${t('import.handledBy', { name: r.assignedToName })}`}
                     </span>
                   </td>
                 </tr>

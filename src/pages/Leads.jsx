@@ -8,7 +8,7 @@ import { useLocale } from '../context/LocaleContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { useBranches, useCourses } from '../hooks/useReferenceData.js';
 import { useLiveUpdates } from '../hooks/useLiveUpdates.js';
-import { canEditLeads, isAdmin, isLeader, LEAD_SOURCES, PIPELINE_ORDER, ROLES } from '../lib/constants.js';
+import { canEditLeads, canImportLeads, isAdmin, isLeader, LEAD_SOURCES, PIPELINE_ORDER, ROLES } from '../lib/constants.js';
 import { bilingual } from '../lib/format.js';
 import { downloadLeadsWorkbook } from '../lib/exportSheet.js';
 import {
@@ -57,6 +57,7 @@ export default function Leads() {
   const admin = isAdmin(user);
   const leader = isLeader(user);
   const canEdit = canEditLeads(user);
+  const canImport = canImportLeads(user);
 
   useLiveUpdates(['leads']);
 
@@ -167,7 +168,7 @@ export default function Leads() {
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">{t('export.button')}</span>
           </Button>
-          {canEdit && (
+          {canImport && (
             <Button variant="secondary" onClick={() => setImportOpen(true)}>
               <Upload className="h-4 w-4" />
               <span className="hidden sm:inline">{t('import.button')}</span>

@@ -231,7 +231,10 @@
     "platform": "Platform",
     "notContactedYet": "Not contacted yet",
     "overdue": "Overdue",
-    "dueToday": "Due today"
+    "dueToday": "Due today",
+    "country": "Country",
+    "formAnswers": "Form answers",
+    "duplicateOwned": "This number is already in the CRM — {{name}} is handling it"
   },
   "queue": {
     "title": "My queue",
@@ -447,7 +450,8 @@
     "reasonMissingName": "Missing a name",
     "reasonMissingPhone": "Missing or unreadable phone number",
     "reasonRepeatedInFile": "Repeated earlier in this same file",
-    "reasonAlreadyExists": "Already in the CRM"
+    "reasonAlreadyExists": "Already in the CRM",
+    "handledBy": "handled by {{name}}"
   },
   "export": {
     "button": "Export to Excel",
