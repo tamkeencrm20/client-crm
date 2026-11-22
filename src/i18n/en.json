@@ -234,7 +234,11 @@
     "dueToday": "Due today",
     "country": "Country",
     "formAnswers": "Form answers",
-    "duplicateOwned": "This number is already in the CRM — {{name}} is handling it"
+    "duplicateOwned": "This number is already in the CRM — {{name}} is handling it",
+    "quality": "Lead type",
+    "qualityNormal": "Real leads",
+    "qualityTest": "Test leads",
+    "qualityIncomplete": "Incomplete (no phone)"
   },
   "queue": {
     "title": "My queue",

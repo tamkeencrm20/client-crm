@@ -35,6 +35,10 @@ const EMPTY_FILTERS = {
   course: '',
   assignedTo: '',
   open: '',
+  // Leads that arrived incomplete, and leads a platform's testing tool made.
+  // Both are hidden from the normal view, which is right until the person
+  // looking is the one who sent the test and cannot find it anywhere.
+  quality: '',
   sort: 'newest',
 };
 
@@ -78,6 +82,8 @@ export default function Leads() {
     if (debounced) p.search = debounced;
     if (filters.status) p.status = filters.status;
     if (filters.source) p.source = filters.source;
+    if (filters.quality === 'test') p.isTest = 'true';
+    if (filters.quality === 'incomplete') p.dataIssue = 'any';
     if (filters.course) p.course = filters.course;
     if (filters.open) p.open = filters.open;
     if (admin && filters.branch) p.branch = filters.branch;
@@ -270,6 +276,14 @@ export default function Leads() {
                 <option value="">{t('common.all')}</option>
                 <option value="true">{t('leads.openOnly')}</option>
                 <option value="false">{t('leads.closedOnly')}</option>
+              </Select>
+            </Field>
+
+            <Field label={t('leads.quality')}>
+              <Select value={filters.quality} onChange={(e) => setFilter('quality', e.target.value)}>
+                <option value="">{t('leads.qualityNormal')}</option>
+                <option value="test">{t('leads.qualityTest')}</option>
+                <option value="incomplete">{t('leads.qualityIncomplete')}</option>
               </Select>
             </Field>
 

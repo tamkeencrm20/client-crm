@@ -234,7 +234,11 @@
     "dueToday": "مستحق اليوم",
     "country": "الدولة",
     "formAnswers": "إجابات النموذج",
-    "duplicateOwned": "هذا الرقم مسجّل مسبقاً — يتابعه {{name}}"
+    "duplicateOwned": "هذا الرقم مسجّل مسبقاً — يتابعه {{name}}",
+    "quality": "نوع العملاء",
+    "qualityNormal": "العملاء الفعليون",
+    "qualityTest": "العملاء التجريبيون",
+    "qualityIncomplete": "الناقصون (بلا رقم)"
   },
   "queue": {
     "title": "مهامي اليوم",
